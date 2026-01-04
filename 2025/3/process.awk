@@ -5,23 +5,38 @@ BEGIN {
   sum = 0
 }
 
-function find_largest_2_digit_num(s) {
-  l = length(s)
-  i = 1
-  largest = 0
-  while(i < l) {
-    val = substr(s, i++, 1) * 10
-    j = i
-    while(j <= l) {
-      new = val + substr(s, j++, 1)
-      if (new > largest) largest = new
+# find the largest single digit and the index where it was found
+function find_largest(ss) {
+  ll = length(ss)
+  data["value"] = data["index"] = 0
+  for (ii = 1; ii <= ll; ++ii) {
+    digit = substr(ss, ii, 1)
+    if (digit > data["value"]) {
+      data["value"] = digit
+      data["index"] = ii
     }
   }
-  return largest
+  return (data["index"] * 10) + data["value"]
+}
+
+# split sequences and drive for result
+function find_largest_n_digit_num(s, n) {
+  l = length(s)
+  i = 0
+  num = 0
+  while(--n >= 0) {
+    result = find_largest(substr(s, i + 1, l - n - i))
+    value = result % 10
+    i += (result - value) / 10
+    num += value * (10 ^ n)
+  }
+  return num
 }
 
 {
-  sum += find_largest_2_digit_num($1)
+  # default digits to 2
+  if (num_digits == 0) num_digits = 2
+  sum += find_largest_n_digit_num($1, num_digits)
 }
 
 END {
